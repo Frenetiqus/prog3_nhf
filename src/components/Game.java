@@ -31,10 +31,11 @@ public class Game extends JFrame{
     static private Integer MAPSIZE_X_MAX, MAPSIZE_Y_MAX;
     static private boolean isExit, isPaused;
     static String BACKGROUND_FILEPATH;
-    private Object[] defaultPlanets;
-    HashMap<String, Command> defaultPlanetPlacer;
+    private Object[] defaultPlanets, backgroundOptions;
     JPanel topPanel, bottomPanel, mainPanel;
-    JComboBox<Object> cbox;
+    HashMap<String, PlanetPlacer> defaultPlanetPlacer;
+    HashMap<String, BackgroundChanger> backgroundChanger;
+    JComboBox<Object> cboxPlanets, cboxBackground;
     JTextField radiusField;
     JTextField massField;
     BufferedImage backgroundBuffImage;
@@ -50,66 +51,65 @@ public class Game extends JFrame{
         MASS_MAX = 10e18;
         MAPSIZE_X_MAX = 1400;
         MAPSIZE_Y_MAX = 700;
-        BACKGROUND_FILEPATH = "";
+        BACKGROUND_FILEPATH = "src/components/Background_High_Quality.jpg";
     }
 
     public Game(){
         controller = new Controller(MAPSIZE_X_MAX, MAPSIZE_Y_MAX);
-        defaultPlanets = new String[]{"Earth", "Mars", "Moon", "Sun", "Neptun","Custom"};
-        try {
-            backgroundBuffImage = ImageIO.read(new FileInputStream(BACKGROUND_FILEPATH));
-        } catch (IOException e) {
-            e.printStackTrace();
+        defaultPlanets = new String[]{"Earth", "Mars", "Moon", "Sun", "Neptun", "Black Hole","Custom"};
+        backgroundOptions = new String[]{"White", "Universe", "Black"};
+        if(BACKGROUND_FILEPATH != null && BACKGROUND_FILEPATH != ""){
+            try {
+                backgroundBuffImage = ImageIO.read(new FileInputStream(BACKGROUND_FILEPATH));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         
+        fillBackgroundChanger();
         fillDefaultPlanetPlacer();
         setUpGUI();
     }
 
-    @Override
-    public void paintComponents(Graphics g) {
-        super.paintComponents(g);
-        Graphics2D g2d = (Graphics2D)g;
-        if(backgroundBuffImage != null){
-            g2d.drawImage(backgroundBuffImage, 0, 0, this);
-        }else{
-            //System.out.println("ERROR: backgroundBuffImage was null");
-        }
-    }
-
     private void fillDefaultPlanetPlacer(){
         defaultPlanetPlacer = new HashMap<>();
-        defaultPlanetPlacer.put("Earth", new Command() {
+        defaultPlanetPlacer.put("Earth", new PlanetPlacer() {
             @Override
             public void placePlanet(Integer x, Integer y) {
-                controller.placePlanet(15.371, 4.57e4, new Vector(x, y), new Color(40, 122, 184));
+                controller.placePlanet(14.371, 4.57e4, new Vector(x, y), new Color(40, 122, 184));
             }
         });
-        defaultPlanetPlacer.put("Mars", new Command() {
+        defaultPlanetPlacer.put("Mars", new PlanetPlacer() {
             @Override
             public void placePlanet(Integer x, Integer y) {
                 controller.placePlanet(10.389, 3.39e3, new Vector(x, y), new Color(0xc1440e));
             }
         });
-        defaultPlanetPlacer.put("Moon", new Command() {
+        defaultPlanetPlacer.put("Moon", new PlanetPlacer() {
             @Override
             public void placePlanet(Integer x, Integer y) {
                 controller.placePlanet(5.37, 7.34e2, new Vector(x, y), new Color(102, 102, 102 ));
             }
         });
-        defaultPlanetPlacer.put("Neptun", new Command() {
+        defaultPlanetPlacer.put("Neptun", new PlanetPlacer() {
             @Override
             public void placePlanet(Integer x, Integer y) {
-                controller.placePlanet(12.37, 5.97e6, new Vector(x, y), new Color(0x3f54ba));
+                controller.placePlanet(17.37, 5.97e6, new Vector(x, y), new Color(0x3f54ba));
             }
         });
-        defaultPlanetPlacer.put("Sun", new Command() {
+        defaultPlanetPlacer.put("Sun", new PlanetPlacer() {
             @Override
             public void placePlanet(Integer x, Integer y) {
-                controller.placePlanet(22.024, 5.97e17, new Vector(x, y), new Color( 253, 184, 19 ));
+                controller.placePlanet(30.024, 5.97e17, new Vector(x, y), new Color( 253, 184, 19 ));
             }
         });
-        defaultPlanetPlacer.put("Custom", new Command() {
+        defaultPlanetPlacer.put("Black Hole", new PlanetPlacer() {
+            @Override
+            public void placePlanet(Integer x, Integer y) {
+                controller.placePlanet(3.024, 8.97e19, new Vector(x, y), new Color( 0, 0, 0));
+            }
+        });
+        defaultPlanetPlacer.put("Custom", new PlanetPlacer() {
             @Override
             public void placePlanet(Integer x, Integer y) {
                 String radiusFieldText = radiusField.getText();
@@ -138,6 +138,35 @@ public class Game extends JFrame{
         });
     }
 
+    private void fillBackgroundChanger(){
+        backgroundChanger = new HashMap<>();
+        backgroundChanger.put("Universe", new BackgroundChanger() {
+            @Override
+            public void paintBackground(Graphics g, Component comp) {
+                Graphics2D g2d = (Graphics2D) g;
+                if(backgroundBuffImage != null){
+                    g2d.drawImage(backgroundBuffImage, 0, 0, comp);
+                }
+            }
+        });
+        backgroundChanger.put("Black", new BackgroundChanger() {
+            @Override
+            public void paintBackground(Graphics g, Component comp) {
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setPaint(Color.black);
+                g2d.fillRect(0, 0, MAPSIZE_X_MAX, MAPSIZE_Y_MAX);            
+            }
+        });
+        backgroundChanger.put("White", new BackgroundChanger() {
+            @Override
+            public void paintBackground(Graphics g, Component comp) {
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setPaint(Color.white);
+                g2d.fillRect(0, 0, MAPSIZE_X_MAX, MAPSIZE_Y_MAX);   
+            }
+        });
+    }
+
     private void setUpGUI(){
         this.setPreferredSize(new Dimension(MAPSIZE_X_MAX, MAPSIZE_Y_MAX));
         this.setSize(getPreferredSize());
@@ -156,7 +185,7 @@ public class Game extends JFrame{
             public void componentResized(ComponentEvent componentEvent) {
                 MAPSIZE_X_MAX = thisFrame.getWidth();
                 MAPSIZE_Y_MAX = thisFrame.getHeight();
-                controller.setMaxMapSize(MAPSIZE_X_MAX, MAPSIZE_Y_MAX-bottomPanel.getHeight());
+                controller.setMaxMapSize(MAPSIZE_X_MAX, MAPSIZE_Y_MAX-124);
             }
         });
 
@@ -168,12 +197,19 @@ public class Game extends JFrame{
                     int x = e.getX();
                     int y = e.getY();
                                
-                    String currDefaultPlanet = (String)cbox.getSelectedItem();
-                    System.out.println(currDefaultPlanet);
+                    String currDefaultPlanet = (String)cboxPlanets.getSelectedItem();
                     if(defaultPlanetPlacer.containsKey(currDefaultPlanet)){
                         defaultPlanetPlacer.get(currDefaultPlanet).placePlanet(x, y);
                     } 
-                    mainPanel.repaint();                  
+                    mainPanel.repaint();
+                    return;            
+                }
+                if (e.getButton() == MouseEvent.BUTTON3){
+                    int x = e.getX();
+                    int y = e.getY();
+                    controller.removePlanet(x, y);
+                    mainPanel.repaint();
+                    return;
                 }
             }
             @Override
@@ -220,14 +256,14 @@ public class Game extends JFrame{
         bottomPanel.add(massLabel);
         bottomPanel.add(massField);
 
-        // ComboBox
-        cbox = new JComboBox<>(defaultPlanets);
-        cbox.setEditable(false);
-        cbox.setSelectedIndex(0);
-        cbox.addActionListener(new ActionListener(){
+        // ComboBox for Default Planets
+        cboxPlanets = new JComboBox<>(defaultPlanets);
+        cboxPlanets.setEditable(false);
+        cboxPlanets.setSelectedIndex(0);
+        cboxPlanets.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
-                String currDefaultPlanet = (String)cbox.getSelectedItem();
+                String currDefaultPlanet = (String)cboxPlanets.getSelectedItem();
                 if(!currDefaultPlanet.equals("Custom")){
                     radiusField.setEditable(false);
                     massField.setEditable(false);
@@ -237,7 +273,24 @@ public class Game extends JFrame{
                 }       
             }
         });
-        bottomPanel.add(cbox);
+        bottomPanel.add(cboxPlanets);
+
+        // ComboBox to change Background
+        cboxBackground = new JComboBox<>(backgroundOptions);
+        cboxBackground.setEditable(false);
+        cboxBackground.setSelectedIndex(0);
+        cboxBackground.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String currBackground = (String)cboxBackground.getSelectedItem();
+                if(currBackground.equals("Universe") && backgroundBuffImage == null){
+                    showMessageDialog(null, "Could not load Universe background! Background was set to White.");
+                    cboxBackground.setSelectedItem("White");
+                }
+            }
+        });
+        bottomPanel.add(cboxBackground);
+
         this.add(bottomPanel, BorderLayout.SOUTH);
     }
     
@@ -253,7 +306,7 @@ public class Game extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 //isPaused = !isPaused;
                 if(isPaused = !isPaused){
-                    buttonPause.setText("CONTINUE");
+                    buttonPause.setText("RESUME");
                 } else{
                     buttonPause.setText("PAUSE");
                 }
@@ -286,9 +339,11 @@ public class Game extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 controller.resetGame();
+                mainPanel.repaint();
             }
         });
         topPanel.add(buttonReset);
+
 
         // Button to Exit
         JButton buttonExit = new JButton("EXIT");
@@ -306,21 +361,19 @@ public class Game extends JFrame{
     private void setUpMainPanel(){
         // mainPanel
         mainPanel = new JPanel(){
-
             @Override
             public void paintComponent(Graphics g) {
                 Graphics2D g2d = (Graphics2D) g;
         
-                g2d.clearRect(0, 0, MAPSIZE_X_MAX, MAPSIZE_Y_MAX);                
-                if(backgroundBuffImage != null){
-                    g2d.drawImage(backgroundBuffImage, 0, 0, this);
-                }else{
-                    //System.out.println("ERROR: backgroundBuffImage was null");
-                }
+                g2d.clearRect(0, 0, MAPSIZE_X_MAX, MAPSIZE_Y_MAX); 
+
+                String currBackground = (String)cboxBackground.getSelectedItem();
+                backgroundChanger.get(currBackground).paintBackground(g2d, this);
 
                 controller.drawPlanets(g2d);
             }
         };
+        mainPanel.setBackground(new Color(0,0,0,0));
         
         this.add(mainPanel, BorderLayout.CENTER);
     }

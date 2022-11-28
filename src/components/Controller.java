@@ -27,8 +27,6 @@ public class Controller{
 
     public void placePlanet(Double radius, Double mass, Vector position, Color color) {
         Planet newPlanet = new Planet(radius, mass, position, new Vector(), color);
-        System.out.println(MAPSIZE_X_MAX + ";" + MAPSIZE_Y_MAX);
-        System.out.println(position);
         if(newPlanet.isInsideBoundary(0, MAPSIZE_X_MAX, 0, MAPSIZE_Y_MAX) && getPlanetAt(position)==null){
             planets.add(newPlanet);
         }         
@@ -77,7 +75,6 @@ public class Controller{
             handlePlanetAnomalies(currPlanet, oldPosition, oldVelocity);
             System.out.println(currPlanet + "   v=" + currPlanet.getVelocity() + "; x" + currPlanet.getPosition());
         }
-        // handlePlanetAnomalies();
     }
 
     private void handlePlanetAnomalies(Planet planet, Vector oldPosition, Vector oldVelocity){
@@ -97,7 +94,7 @@ public class Controller{
                     newVelocity = new Vector(oldVelocity.getC1(), -1.0*oldVelocity.getC2());    
                     break;
                 case bottom:
-                    newVelocity = new Vector(-1.0*oldVelocity.getC1(), -1.0*oldVelocity.getC2());    
+                    newVelocity = new Vector(oldVelocity.getC1(), -1.0*oldVelocity.getC2());    
                     break;
             }
             planet.setVelocity(newVelocity.multiply(0.5));
