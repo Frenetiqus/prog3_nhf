@@ -1,10 +1,13 @@
-package components;
+package logic;
+
 
 import static org.junit.Assert.*;
 
 import java.util.Random;
 
 import org.junit.Test;
+
+// import logic.Vector;
 
 public class VectorTest{
     

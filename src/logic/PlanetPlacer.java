@@ -1,5 +1,5 @@
-package components;
+package logic;
 
-public interface Command {
+public interface PlanetPlacer {
     public void placePlanet(Integer x, Integer y);
 }

@@ -1,4 +1,4 @@
-package components;
+package logic;
 
 public class Vector{
     private Double c1;

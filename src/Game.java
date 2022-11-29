@@ -1,18 +1,12 @@
-package components;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.ShortBuffer;
 import java.util.HashMap;
 import java.util.Random;
-import java.awt.image.ImageObserver;
 
 import javax.imageio.ImageIO;
-import javax.sql.rowset.CachedRowSet;
 import javax.swing.*;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -20,6 +14,12 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import logic.BackgroundChanger;
+import logic.Controller;
+import logic.PlanetPlacer;
+import logic.Vector;
+
 import static javax.swing.JOptionPane.showMessageDialog;
 
 public class Game extends JFrame{

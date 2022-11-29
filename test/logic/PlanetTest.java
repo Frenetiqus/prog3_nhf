@@ -1,4 +1,5 @@
-package components;
+package logic;
+
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -6,6 +7,9 @@ import static org.junit.Assert.assertTrue;
 import java.util.Random;
 
 import org.junit.Test;
+
+// import logic.Planet;
+// import logic.Vector;
 
 //import org.junit.*;
 

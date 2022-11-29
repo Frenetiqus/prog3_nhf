@@ -1,4 +1,4 @@
-package components;
+package logic;
 
 import java.awt.Graphics;
 import java.awt.Component;
