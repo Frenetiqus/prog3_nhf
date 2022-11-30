@@ -51,13 +51,13 @@ public class Game extends JFrame{
         MASS_MAX = 10e18;
         MAPSIZE_X_MAX = 1400;
         MAPSIZE_Y_MAX = 700;
-        BACKGROUND_FILEPATH = "src/components/Background_High_Quality.jpg";
+        BACKGROUND_FILEPATH = "src/Background_High_Quality.jpg";
     }
 
     public Game(){
         controller = new Controller(MAPSIZE_X_MAX, MAPSIZE_Y_MAX);
         defaultPlanets = new String[]{"Earth", "Mars", "Moon", "Sun", "Neptun", "Black Hole","Custom"};
-        backgroundOptions = new String[]{"White", "Universe", "Black"};
+        backgroundOptions = new String[]{"Universe", "White", "Black"};
         if(BACKGROUND_FILEPATH != null && BACKGROUND_FILEPATH != ""){
             try {
                 backgroundBuffImage = ImageIO.read(new FileInputStream(BACKGROUND_FILEPATH));
@@ -100,13 +100,13 @@ public class Game extends JFrame{
         defaultPlanetPlacer.put("Sun", new PlanetPlacer() {
             @Override
             public void placePlanet(Integer x, Integer y) {
-                controller.placePlanet(30.024, 5.97e17, new Vector(x, y), new Color( 253, 184, 19 ));
+                controller.placePlanet(30.024, 5.97e18, new Vector(x, y), new Color( 253, 184, 19 ));
             }
         });
         defaultPlanetPlacer.put("Black Hole", new PlanetPlacer() {
             @Override
             public void placePlanet(Integer x, Integer y) {
-                controller.placePlanet(3.024, 8.97e19, new Vector(x, y), new Color( 0, 0, 0));
+                controller.placePlanet(3.024, 8.97e20, new Vector(x, y), new Color( 0, 0, 0));
             }
         });
         defaultPlanetPlacer.put("Custom", new PlanetPlacer() {
@@ -185,7 +185,7 @@ public class Game extends JFrame{
             public void componentResized(ComponentEvent componentEvent) {
                 MAPSIZE_X_MAX = thisFrame.getWidth();
                 MAPSIZE_Y_MAX = thisFrame.getHeight();
-                controller.setMaxMapSize(MAPSIZE_X_MAX, MAPSIZE_Y_MAX-124);
+                controller.setMaxMapsize(MAPSIZE_X_MAX, MAPSIZE_Y_MAX-124);
             }
         });
 
@@ -391,8 +391,7 @@ public class Game extends JFrame{
                 if(!isPaused){
                     controller.calculateNewPlanetPositions();
                     mainPanel.repaint();
-                    Thread.sleep(getSleepTime()); 
-                    System.out.println();   
+                    Thread.sleep(getSleepTime());  
                 }
             }
             this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));

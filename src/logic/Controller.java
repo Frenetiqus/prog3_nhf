@@ -14,13 +14,13 @@ public class Controller{
         timeFrame = 1.0/10000.0;
     }
 
-    public Controller(Integer newXMax, Integer newYMax){
-        this.MAPSIZE_X_MAX = newXMax;
-        this.MAPSIZE_Y_MAX = newYMax;
+    public Controller(Integer mapsizeXMax, Integer mapsizeYMax){
+        this.MAPSIZE_X_MAX = mapsizeXMax;
+        this.MAPSIZE_Y_MAX = mapsizeYMax;
         planets = new ArrayList<>();
     }
 
-    public void setMaxMapSize(Integer newXMax, Integer newYMax){
+    public void setMaxMapsize(Integer newXMax, Integer newYMax){
         this.MAPSIZE_X_MAX = newXMax;
         this.MAPSIZE_Y_MAX = newYMax;
     }
@@ -73,7 +73,7 @@ public class Controller{
             currPlanet.setPosition(newPosition);
 
             handlePlanetAnomalies(currPlanet, oldPosition, oldVelocity);
-            System.out.println(currPlanet + "   v=" + currPlanet.getVelocity() + "; x" + currPlanet.getPosition());
+            //System.out.println(currPlanet + "   v=" + currPlanet.getVelocity() + "; x" + currPlanet.getPosition());
         }
     }
 
