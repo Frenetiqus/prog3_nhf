@@ -94,7 +94,8 @@ public class Game extends JFrame{
         defaultPlanetPlacer.put("Neptun", new PlanetPlacer() {
             @Override
             public void placePlanet(Integer x, Integer y) {
-                controller.placePlanet(17.37, 5.97e6, new Vector(x, y), new Color(0x3f54ba));
+                //controller.placePlanet(17.37, 5.97e6, new Vector(x, y), new Color(0x3f54ba));
+                showMessageDialog(null, "Neptun is not available at this time!");
             }
         });
         defaultPlanetPlacer.put("Sun", new PlanetPlacer() {
