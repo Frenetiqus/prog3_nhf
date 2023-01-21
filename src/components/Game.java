@@ -49,7 +49,7 @@ public class Game extends JFrame{
         MASS_MAX = 10e18;
         MAPSIZE_X_MAX = 1400;
         MAPSIZE_Y_MAX = 700;
-        BACKGROUND_FILEPATH = "/home/maller/Projects/University/Prog3_NHF/prog3_nhf/src/components/BackgroundHQ.jpg";
+        BACKGROUND_FILEPATH = "src/components/Background_High_Quality.jpg";
         SAVES_FILEPATH = "src/savefiles.dat";
     }
 
@@ -169,13 +169,7 @@ public class Game extends JFrame{
             @Override
             public void paintBackground(Graphics g, Component comp) {
                 Graphics2D g2d = (Graphics2D) g;
-                //System.out.println("null lesz?");
-                if(backgroundBuffImage != null){
-                    System.out.println("nooope nice");
-                    g2d.drawImage(backgroundBuffImage, 0, 0, comp);
-                } else{
-                    //System.out.println("jaa..");
-                }
+                g2d.drawImage(backgroundBuffImage, 0, 0, comp);
             }
         });
         backgroundChanger.put("Black", new BackgroundChanger() {
