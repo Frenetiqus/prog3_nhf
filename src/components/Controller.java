@@ -151,8 +151,8 @@ public class Controller{
                     break;
             }
             planet.setVelocity(newVelocity.multiply(0.5));
-            c.countStop();
         }
+        c.countStop();
         // // check if planet collides with othet planet, if yes keep old pos and bounce
         // for (Planet p : planets) {
         //     if(planet == p) continue;

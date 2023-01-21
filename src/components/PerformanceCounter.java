@@ -47,6 +47,9 @@ public class PerformanceCounter{
         public long getMin() {
             return min;
         }
+        public long getElemCount() {
+            return elemCount;
+        }
     }
 
     static{
@@ -81,6 +84,7 @@ public class PerformanceCounter{
                     String funcName = entry.getKey();
                     Time result = entry.getValue();
                     writer.write("-----"+funcName+"-----\n");
+                    writer.write("count: " + (double)result.getElemCount() + "\n");
                     writer.write("min: " + (double)result.getMin()/1000000 + " ms\n");
                     writer.write("max: " + (double)result.getMax()/1000000 + " ms\n");
                     writer.write("avg: " + (double)result.getAvg()/1000000 + " ms\n");

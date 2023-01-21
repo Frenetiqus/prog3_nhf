@@ -27,7 +27,7 @@ public class Game extends JFrame{
     static private Double RADIUS_MIN, RADIUS_MAX;
     static private Double MASS_MIN, MASS_MAX;
     static private Integer MAPSIZE_X_MAX, MAPSIZE_Y_MAX;
-    static private boolean isExit, isPaused;
+    static private boolean isExit, isPaused = true;
     static String BACKGROUND_FILEPATH, SAVES_FILEPATH;
     private Object[] defaultPlanets, backgroundOptions;
     JPanel topPanel, bottomPanel, mainPanel;
@@ -59,11 +59,9 @@ public class Game extends JFrame{
         backgroundOptions = new String[]{"Universe", "White", "Black"};
         if(BACKGROUND_FILEPATH != null && BACKGROUND_FILEPATH != ""){
             try {
-                while(backgroundBuffImage == null){
-                    System.out.println(BACKGROUND_FILEPATH);
-                    backgroundBuffImage = ImageIO.read(new FileInputStream(BACKGROUND_FILEPATH));
-                    System.out.println(backgroundBuffImage);
-                }
+                FileInputStream is = new FileInputStream(BACKGROUND_FILEPATH);
+                backgroundBuffImage = ImageIO.read(is);
+                is.close();
                 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -338,6 +336,7 @@ public class Game extends JFrame{
                     showMessageDialog(null, "Could not load Universe background! Background was set to White.");
                     cboxBackground.setSelectedItem("White");
                 }
+                mainPanel.repaint();
             }
         });
         bottomPanel.add(cboxBackground);
@@ -371,7 +370,7 @@ public class Game extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 try{
-                    controller.saveSimulationToFile(BACKGROUND_FILEPATH);
+                    controller.saveSimulationToFile(SAVES_FILEPATH);
                 }catch(IOException err){
                     err.printStackTrace();
                 }
@@ -387,7 +386,7 @@ public class Game extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 try{
-                    controller.loadSimulationFile(BACKGROUND_FILEPATH);
+                    controller.loadSimulationFile(SAVES_FILEPATH);
                 }catch(IOException err){
                     err.printStackTrace();
                 }
@@ -396,7 +395,8 @@ public class Game extends JFrame{
         topPanel.add(buttonLoad);
 
         // Button to Pause
-        JButton buttonPause = new JButton("PAUSE");
+        String buttonTitleInit = isPaused ? "START" : "PAUSE";
+        JButton buttonPause = new JButton(buttonTitleInit);
         buttonPause.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -406,7 +406,7 @@ public class Game extends JFrame{
                 } else{
                     buttonPause.setText("PAUSE");
                 }
-                ;
+                mainPanel.repaint();
             }
         });
         topPanel.add(buttonPause);

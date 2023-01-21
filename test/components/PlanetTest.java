@@ -84,4 +84,17 @@ public class PlanetTest{
         assertTrue(p.isInsideBoundary(-3, 3, -3, 3));
         assertTrue(p.isInsideBoundary(-3, 3, -1, 3) == false);
     }
+
+    @Test
+    public void testCalculateWallCollision(){
+        Planet p = new Planet(3.0, 10.0, new Vector(0.0,0.0), new Vector(0.0,0.0), null);
+        assertTrue(p.isInsideBoundary(-4, 4, -4, 4));
+        assertTrue(p.isInsideBoundary(-3, 3, -3, 3) == false);
+
+        p = new Planet(2.99999999, 10.0, new Vector(0.0,0.0), new Vector(0.0,0.0), null);
+        assertTrue(p.isInsideBoundary(-4, 4, -4, 4));
+        assertTrue(p.isInsideBoundary(-3, 3, -3, 3));
+        assertTrue(p.isInsideBoundary(-3, 3, -1, 3) == false);
+    }
+
 }

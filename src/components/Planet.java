@@ -69,22 +69,25 @@ public class Planet implements Serializable{
     public WallCollision calculateWallCollision(Integer minX, Integer maxX, Integer minY, Integer maxY){
         PerformanceCounter c = new PerformanceCounter("calculateWallCollision()");
         c.countStart();
-        int precision = 2;
-        for (int i = 0; i < 360*precision; i++) {
-            Double fi = Math.toRadians(Double.valueOf(i)/Double.valueOf(precision));
-            Vector currPoint = this.getCirclePointAt(fi);
-            if(currPoint.getC1().compareTo(Double.valueOf(minX)) <= 0){
-                return WallCollision.left;
-            }
-            if(currPoint.getC1().compareTo(Double.valueOf(maxX)) >= 0){
-                return WallCollision.right;
-            }
-            if(currPoint.getC2().compareTo(Double.valueOf(minY)) <= 0){
-                return WallCollision.top;
-            }
-            if(currPoint.getC2().compareTo(Double.valueOf(maxY)) >= 0){
-                return WallCollision.bottom;
-            }
+        Vector leftPoint = this.getCirclePointAt(Math.PI);
+        Vector rightPoint = this.getCirclePointAt(0.0);
+        Vector topPoint = this.getCirclePointAt(Math.PI/2.0);
+        Vector bottomPoint = this.getCirclePointAt(-Math.PI/2.0);
+        if(leftPoint.getC1() <= Double.valueOf(minX)){
+            c.countStop();
+            return WallCollision.left;
+        }
+        if(rightPoint.getC1() >= Double.valueOf(maxX)){
+            c.countStop();
+            return WallCollision.right;
+        }
+        if(topPoint.getC2() >= Double.valueOf(maxY)){
+            c.countStop();
+            return WallCollision.top;
+        }
+        if(bottomPoint.getC2() <= Double.valueOf(minY)){
+            c.countStop();
+            return WallCollision.bottom;
         }
         c.countStop();
         return null;
@@ -97,16 +100,11 @@ public class Planet implements Serializable{
         for (int i = 0; i < 360*precision; i++) {
             Double fi = Math.toRadians(Double.valueOf(i)/Double.valueOf(precision));
             Vector currPoint = this.getCirclePointAt(fi);
-            // if(currPoint.getC1().compareTo(Double.valueOf(minX)) == -1 || currPoint.getC1().compareTo(Double.valueOf(minX)) == 0  ||
-            //    currPoint.getC1().compareTo(Double.valueOf(maxX)) == 1 || currPoint.getC1().compareTo(Double.valueOf(maxX)) == 0 ||
-            //    currPoint.getC2().compareTo(Double.valueOf(minY)) == -1 || currPoint.getC2().compareTo(Double.valueOf(minY)) == 0 ||
-            //    currPoint.getC2().compareTo(Double.valueOf(maxY)) == 1 || currPoint.getC2().compareTo(Double.valueOf(maxY)) == 0){
-            //         return false;
-            // }
             Double x = currPoint.getC1();
             Double y = currPoint.getC2();
             if(!(Double.valueOf(minX) < x && x < Double.valueOf(maxX) && Double.valueOf(minY) < y && y < Double.valueOf(maxY))){
-                    return false;
+                c.countStop();    
+                return false;
             }
         }
         c.countStop();
@@ -117,6 +115,7 @@ public class Planet implements Serializable{
         PerformanceCounter c = new PerformanceCounter("calculateForceTo()");
         c.countStart();
         if(this.getPosition().equals(other.getPosition())){
+            c.countStop();
             return new Vector();
         }
         Vector distanceVec = other.position.add(this.position.multiply(-1.0));
