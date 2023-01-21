@@ -1,18 +1,15 @@
 package components;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.ShortBuffer;
 import java.util.HashMap;
 import java.util.Random;
-import java.awt.image.ImageObserver;
 
 import javax.imageio.ImageIO;
-import javax.sql.rowset.CachedRowSet;
 import javax.swing.*;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -20,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
 import static javax.swing.JOptionPane.showMessageDialog;
 
 public class Game extends JFrame{
@@ -30,11 +28,12 @@ public class Game extends JFrame{
     static private Double MASS_MIN, MASS_MAX;
     static private Integer MAPSIZE_X_MAX, MAPSIZE_Y_MAX;
     static private boolean isExit, isPaused;
-    static String BACKGROUND_FILEPATH;
-    private Object[] defaultPlanets;
-    HashMap<String, Command> defaultPlanetPlacer;
+    static String BACKGROUND_FILEPATH, SAVES_FILEPATH;
+    private Object[] defaultPlanets, backgroundOptions;
     JPanel topPanel, bottomPanel, mainPanel;
-    JComboBox<Object> cbox;
+    HashMap<String, PlanetPlacer> defaultPlanetPlacer;
+    HashMap<String, BackgroundChanger> backgroundChanger;
+    JComboBox<Object> cboxPlanets, cboxBackground;
     JTextField radiusField;
     JTextField massField;
     BufferedImage backgroundBuffImage;
@@ -50,66 +49,77 @@ public class Game extends JFrame{
         MASS_MAX = 10e18;
         MAPSIZE_X_MAX = 1400;
         MAPSIZE_Y_MAX = 700;
-        BACKGROUND_FILEPATH = "";
+        BACKGROUND_FILEPATH = "/home/maller/Projects/University/Prog3_NHF/prog3_nhf/src/components/BackgroundHQ.jpg";
+        SAVES_FILEPATH = "src/savefiles.dat";
     }
 
     public Game(){
         controller = new Controller(MAPSIZE_X_MAX, MAPSIZE_Y_MAX);
-        defaultPlanets = new String[]{"Earth", "Mars", "Moon", "Sun", "Neptun","Custom"};
-        try {
-            backgroundBuffImage = ImageIO.read(new FileInputStream(BACKGROUND_FILEPATH));
-        } catch (IOException e) {
-            e.printStackTrace();
+        defaultPlanets = new String[]{"Earth", "Mars", "Moon", "Sun", "Neptun", "Black Hole","Custom"};
+        backgroundOptions = new String[]{"Universe", "White", "Black"};
+        if(BACKGROUND_FILEPATH != null && BACKGROUND_FILEPATH != ""){
+            try {
+                while(backgroundBuffImage == null){
+                    System.out.println(BACKGROUND_FILEPATH);
+                    backgroundBuffImage = ImageIO.read(new FileInputStream(BACKGROUND_FILEPATH));
+                    System.out.println(backgroundBuffImage);
+                }
+                
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         
+        fillBackgroundChanger();
         fillDefaultPlanetPlacer();
         setUpGUI();
     }
 
-    @Override
-    public void paintComponents(Graphics g) {
-        super.paintComponents(g);
-        Graphics2D g2d = (Graphics2D)g;
-        if(backgroundBuffImage != null){
-            g2d.drawImage(backgroundBuffImage, 0, 0, this);
-        }else{
-            //System.out.println("ERROR: backgroundBuffImage was null");
-        }
-    }
-
+    /**
+    * Feltolti a defualtPlanetPlacer HashMapet úgy, hogy hozzárendeli a bolygók neveihez a 
+    * hozzájuk tartozó PlanetPlacer interface álltal megvalósított bolygó lerakókat
+    * <p>
+    */
     private void fillDefaultPlanetPlacer(){
         defaultPlanetPlacer = new HashMap<>();
-        defaultPlanetPlacer.put("Earth", new Command() {
+        defaultPlanetPlacer.put("Earth", new PlanetPlacer() {
             @Override
             public void placePlanet(Integer x, Integer y) {
-                controller.placePlanet(15.371, 4.57e4, new Vector(x, y), new Color(40, 122, 184));
+                controller.placePlanet(14.371, 4.57e4, new Vector(x, y), new Color(40, 122, 184));
             }
         });
-        defaultPlanetPlacer.put("Mars", new Command() {
+        defaultPlanetPlacer.put("Mars", new PlanetPlacer() {
             @Override
             public void placePlanet(Integer x, Integer y) {
                 controller.placePlanet(10.389, 3.39e3, new Vector(x, y), new Color(0xc1440e));
             }
         });
-        defaultPlanetPlacer.put("Moon", new Command() {
+        defaultPlanetPlacer.put("Moon", new PlanetPlacer() {
             @Override
             public void placePlanet(Integer x, Integer y) {
                 controller.placePlanet(5.37, 7.34e2, new Vector(x, y), new Color(102, 102, 102 ));
             }
         });
-        defaultPlanetPlacer.put("Neptun", new Command() {
+        defaultPlanetPlacer.put("Neptun", new PlanetPlacer() {
             @Override
             public void placePlanet(Integer x, Integer y) {
-                controller.placePlanet(12.37, 5.97e6, new Vector(x, y), new Color(0x3f54ba));
+                //controller.placePlanet(17.37, 5.97e6, new Vector(x, y), new Color(0x3f54ba));
+                showMessageDialog(null, "Neptun is not available at this time!");
             }
         });
-        defaultPlanetPlacer.put("Sun", new Command() {
+        defaultPlanetPlacer.put("Sun", new PlanetPlacer() {
             @Override
             public void placePlanet(Integer x, Integer y) {
-                controller.placePlanet(22.024, 5.97e17, new Vector(x, y), new Color( 253, 184, 19 ));
+                controller.placePlanet(30.024, 5.97e18, new Vector(x, y), new Color( 253, 184, 19 ));
             }
         });
-        defaultPlanetPlacer.put("Custom", new Command() {
+        defaultPlanetPlacer.put("Black Hole", new PlanetPlacer() {
+            @Override
+            public void placePlanet(Integer x, Integer y) {
+                controller.placePlanet(3.024, 8.97e20, new Vector(x, y), new Color( 0, 0, 0));
+            }
+        });
+        defaultPlanetPlacer.put("Custom", new PlanetPlacer() {
             @Override
             public void placePlanet(Integer x, Integer y) {
                 String radiusFieldText = radiusField.getText();
@@ -138,6 +148,69 @@ public class Game extends JFrame{
         });
     }
 
+    /**
+    * Returns an Image object that can then be painted on the screen. 
+    * The url argument must specify an absolute <a href="#{@link}">{@link URL}</a>. The name
+    * argument is a specifier that is relative to the url argument. 
+    * <p>
+    * This method always returns immediately, whether or not the 
+    * image exists. When this applet attempts to draw the image on
+    * the screen, the data will be loaded. The graphics primitives 
+    * that draw the image will incrementally paint on the screen. 
+    *
+    * @param  url  an absolute URL giving the base location of the image
+    * @param  name the location of the image, relative to the url argument
+    * @return      the image at the specified URL
+    * @see         Image
+    */
+    private void fillBackgroundChanger(){
+        backgroundChanger = new HashMap<>();
+        backgroundChanger.put("Universe", new BackgroundChanger() {
+            @Override
+            public void paintBackground(Graphics g, Component comp) {
+                Graphics2D g2d = (Graphics2D) g;
+                //System.out.println("null lesz?");
+                if(backgroundBuffImage != null){
+                    System.out.println("nooope nice");
+                    g2d.drawImage(backgroundBuffImage, 0, 0, comp);
+                } else{
+                    //System.out.println("jaa..");
+                }
+            }
+        });
+        backgroundChanger.put("Black", new BackgroundChanger() {
+            @Override
+            public void paintBackground(Graphics g, Component comp) {
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setPaint(Color.black);
+                g2d.fillRect(0, 0, MAPSIZE_X_MAX, MAPSIZE_Y_MAX);            
+            }
+        });
+        backgroundChanger.put("White", new BackgroundChanger() {
+            @Override
+            public void paintBackground(Graphics g, Component comp) {
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setPaint(Color.white);
+                g2d.fillRect(0, 0, MAPSIZE_X_MAX, MAPSIZE_Y_MAX);   
+            }
+        });
+    }
+
+    /**
+    * Returns an Image object that can then be painted on the screen. 
+    * The url argument must specify an absolute <a href="#{@link}">{@link URL}</a>. The name
+    * argument is a specifier that is relative to the url argument. 
+    * <p>
+    * This method always returns immediately, whether or not the 
+    * image exists. When this applet attempts to draw the image on
+    * the screen, the data will be loaded. The graphics primitives 
+    * that draw the image will incrementally paint on the screen. 
+    *
+    * @param  url  an absolute URL giving the base location of the image
+    * @param  name the location of the image, relative to the url argument
+    * @return      the image at the specified URL
+    * @see         Image
+    */
     private void setUpGUI(){
         this.setPreferredSize(new Dimension(MAPSIZE_X_MAX, MAPSIZE_Y_MAX));
         this.setSize(getPreferredSize());
@@ -156,7 +229,7 @@ public class Game extends JFrame{
             public void componentResized(ComponentEvent componentEvent) {
                 MAPSIZE_X_MAX = thisFrame.getWidth();
                 MAPSIZE_Y_MAX = thisFrame.getHeight();
-                controller.setMaxMapSize(MAPSIZE_X_MAX, MAPSIZE_Y_MAX-bottomPanel.getHeight());
+                controller.setMaxMapsize(MAPSIZE_X_MAX, MAPSIZE_Y_MAX-124);
             }
         });
 
@@ -168,13 +241,18 @@ public class Game extends JFrame{
                     int x = e.getX();
                     int y = e.getY();
                                
-                    String currDefaultPlanet = (String)cbox.getSelectedItem();
-                    System.out.println(currDefaultPlanet);
+                    String currDefaultPlanet = (String)cboxPlanets.getSelectedItem();
                     if(defaultPlanetPlacer.containsKey(currDefaultPlanet)){
                         defaultPlanetPlacer.get(currDefaultPlanet).placePlanet(x, y);
-                    } 
-                    mainPanel.repaint();                  
+                    }          
                 }
+                if (e.getButton() == MouseEvent.BUTTON3){
+                    int x = e.getX();
+                    int y = e.getY();
+                    controller.removePlanet(x, y);
+                }
+                mainPanel.repaint();
+                return;
             }
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -202,6 +280,21 @@ public class Game extends JFrame{
         this.setVisible(true);
     }
 
+    /**
+    * Returns an Image object that can then be painted on the screen. 
+    * The url argument must specify an absolute <a href="#{@link}">{@link URL}</a>. The name
+    * argument is a specifier that is relative to the url argument. 
+    * <p>
+    * This method always returns immediately, whether or not the 
+    * image exists. When this applet attempts to draw the image on
+    * the screen, the data will be loaded. The graphics primitives 
+    * that draw the image will incrementally paint on the screen. 
+    *
+    * @param  url  an absolute URL giving the base location of the image
+    * @param  name the location of the image, relative to the url argument
+    * @return      the image at the specified URL
+    * @see         Image
+    */
     private void setUpBottomPanel(){
         // bottomPanel
         bottomPanel = new JPanel(new FlowLayout());
@@ -220,14 +313,14 @@ public class Game extends JFrame{
         bottomPanel.add(massLabel);
         bottomPanel.add(massField);
 
-        // ComboBox
-        cbox = new JComboBox<>(defaultPlanets);
-        cbox.setEditable(false);
-        cbox.setSelectedIndex(0);
-        cbox.addActionListener(new ActionListener(){
+        // ComboBox for Default Planets
+        cboxPlanets = new JComboBox<>(defaultPlanets);
+        cboxPlanets.setEditable(false);
+        cboxPlanets.setSelectedIndex(0);
+        cboxPlanets.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
-                String currDefaultPlanet = (String)cbox.getSelectedItem();
+                String currDefaultPlanet = (String)cboxPlanets.getSelectedItem();
                 if(!currDefaultPlanet.equals("Custom")){
                     radiusField.setEditable(false);
                     massField.setEditable(false);
@@ -237,14 +330,76 @@ public class Game extends JFrame{
                 }       
             }
         });
-        bottomPanel.add(cbox);
+        bottomPanel.add(cboxPlanets);
+
+        // ComboBox to change Background
+        cboxBackground = new JComboBox<>(backgroundOptions);
+        cboxBackground.setEditable(false);
+        cboxBackground.setSelectedIndex(0);
+        cboxBackground.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String currBackground = (String)cboxBackground.getSelectedItem();
+                if(currBackground.equals("Universe") && backgroundBuffImage == null){
+                    showMessageDialog(null, "Could not load Universe background! Background was set to White.");
+                    cboxBackground.setSelectedItem("White");
+                }
+            }
+        });
+        bottomPanel.add(cboxBackground);
+
         this.add(bottomPanel, BorderLayout.SOUTH);
     }
     
+    /**
+    * Returns an Image object that can then be painted on the screen. 
+    * The url argument must specify an absolute <a href="#{@link}">{@link URL}</a>. The name
+    * argument is a specifier that is relative to the url argument. 
+    * <p>
+    * This method always returns immediately, whether or not the 
+    * image exists. When this applet attempts to draw the image on
+    * the screen, the data will be loaded. The graphics primitives 
+    * that draw the image will incrementally paint on the screen. 
+    *
+    * @param  url  an absolute URL giving the base location of the image
+    * @param  name the location of the image, relative to the url argument
+    * @return      the image at the specified URL
+    * @see         Image
+    */
     private void setUpTopPanel(){
         // topPanel
         topPanel = new JPanel(new FlowLayout());
         topPanel.setBackground(new Color(0x003b59));
+
+        // Button to Save
+        JButton buttonSave = new JButton("SAVE");
+        buttonSave.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try{
+                    controller.saveSimulationToFile(BACKGROUND_FILEPATH);
+                }catch(IOException err){
+                    err.printStackTrace();
+                }
+                
+            }
+        });
+        topPanel.add(buttonSave);
+
+
+        // Button to Load
+        JButton buttonLoad = new JButton("LOAD");
+        buttonLoad.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try{
+                    controller.loadSimulationFile(BACKGROUND_FILEPATH);
+                }catch(IOException err){
+                    err.printStackTrace();
+                }
+            }
+        });
+        topPanel.add(buttonLoad);
 
         // Button to Pause
         JButton buttonPause = new JButton("PAUSE");
@@ -253,7 +408,7 @@ public class Game extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 //isPaused = !isPaused;
                 if(isPaused = !isPaused){
-                    buttonPause.setText("CONTINUE");
+                    buttonPause.setText("RESUME");
                 } else{
                     buttonPause.setText("PAUSE");
                 }
@@ -286,9 +441,11 @@ public class Game extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 controller.resetGame();
+                mainPanel.repaint();
             }
         });
         topPanel.add(buttonReset);
+
 
         // Button to Exit
         JButton buttonExit = new JButton("EXIT");
@@ -303,24 +460,40 @@ public class Game extends JFrame{
         this.add(topPanel, BorderLayout.NORTH);
     }
 
+    /**
+    * Returns an Image object that can then be painted on the screen. 
+    * The url argument must specify an absolute <a href="#{@link}">{@link URL}</a>. The name
+    * argument is a specifier that is relative to the url argument. 
+    * <p>
+    * This method always returns immediately, whether or not the 
+    * image exists. When this applet attempts to draw the image on
+    * the screen, the data will be loaded. The graphics primitives 
+    * that draw the image will incrementally paint on the screen. 
+    *
+    * @param  url  an absolute URL giving the base location of the image
+    * @param  name the location of the image, relative to the url argument
+    * @return      the image at the specified URL
+    * @see         Image
+    */
     private void setUpMainPanel(){
         // mainPanel
+        PerformanceCounter c = new PerformanceCounter("paintComponent()");
         mainPanel = new JPanel(){
-
             @Override
             public void paintComponent(Graphics g) {
+                c.countStart();
                 Graphics2D g2d = (Graphics2D) g;
         
-                g2d.clearRect(0, 0, MAPSIZE_X_MAX, MAPSIZE_Y_MAX);                
-                if(backgroundBuffImage != null){
-                    g2d.drawImage(backgroundBuffImage, 0, 0, this);
-                }else{
-                    //System.out.println("ERROR: backgroundBuffImage was null");
-                }
+                g2d.clearRect(0, 0, MAPSIZE_X_MAX, MAPSIZE_Y_MAX); 
+
+                String currBackground = (String)cboxBackground.getSelectedItem();
+                backgroundChanger.get(currBackground).paintBackground(g2d, this);
 
                 controller.drawPlanets(g2d);
+                c.countStop();
             }
         };
+        mainPanel.setBackground(new Color(0,0,0,0));
         
         this.add(mainPanel, BorderLayout.CENTER);
     }
@@ -334,14 +507,34 @@ public class Game extends JFrame{
 
     public void runSimulation(){
         try{
+            PerformanceCounter cntr = new PerformanceCounter("runSimulation():while(!isExit)");
+
             while(!isExit){
+                Long start = System.currentTimeMillis();
+                cntr.countStart();
                 if(!isPaused){
                     controller.calculateNewPlanetPositions();
                     mainPanel.repaint();
-                    Thread.sleep(getSleepTime()); 
-                    System.out.println();   
+                    Long elapsed = System.currentTimeMillis() - start;
+                    Long sleepTime = getSleepTime();
+                    if(sleepTime-elapsed>0){
+                        Thread.sleep(getSleepTime()-elapsed); 
+                    }
                 }
+                cntr.countStop();
             }
+            try{
+                File file = new File("src/results.txt");
+                //file.delete();
+                file.createNewFile();
+                FileWriter writer = new FileWriter("src/results.txt");
+                PerformanceCounter.writeResults(writer);
+                writer.close();
+            } catch(IOException e){
+                e.printStackTrace();
+            }
+
+
             this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
         }catch (Exception e){
             e.printStackTrace();

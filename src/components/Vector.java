@@ -1,6 +1,7 @@
 package components;
+import java.io.Serializable;
 
-public class Vector{
+public class Vector implements Serializable{
     private Double c1;
     private Double c2;
 
