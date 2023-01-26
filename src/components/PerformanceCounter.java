@@ -6,7 +6,7 @@ import java.io.*;
 public class PerformanceCounter{
     static HashMap<String, Time> funcTimes;
     private String funcName;
-    long startTime, elapsedTime;
+    private long startTime, elapsedTime;
 
     public class Time{
         long min;

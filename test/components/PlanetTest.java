@@ -40,8 +40,8 @@ public class PlanetTest{
     @Test
     public void testCalculateForceTo(){
         Double m1 = 1000.0, m2 = 500.0;
-        Planet p1 = new Planet(3.0, m1, new Vector(0.0,0.0), new Vector(0.0,0.0), null);
-        Planet p2 = new Planet(3.0, m2, new Vector(10.0,0.0), new Vector(0.0,0.0), null);
+        Planet p1 = new Planet(3.0, m1, new Vector(0.0,0.0), new Vector(0.0,0.0), null, null);
+        Planet p2 = new Planet(3.0, m2, new Vector(10.0,0.0), new Vector(0.0,0.0), null, null);
 
         Double expectedForceLen = (G*m1*m2)/10*10;
         Vector f1 = p1.calculateForceTo(p2);
@@ -60,8 +60,8 @@ public class PlanetTest{
         Random r = new Random();
         Double m = 5000*r.nextDouble();
         Double distance = 15.0;
-        Planet pUp = new Planet(3.0, m, new Vector(0.0,distance), new Vector(0.0,0.0), null);
-        Planet pDown = new Planet(3.0, m, new Vector(0.0,-1*distance), new Vector(0.0,0.0), null);
+        Planet pUp = new Planet(3.0, m, new Vector(0.0,distance), new Vector(0.0,0.0), null, null);
+        Planet pDown = new Planet(3.0, m, new Vector(0.0,-1*distance), new Vector(0.0,0.0), null, null);
         // Resultant force on p1 in space where there are p1, pUp, pDown bodies
         f1 = p1.calculateForceTo(pUp);
         f2 = p1.calculateForceTo(pDown);
@@ -75,11 +75,11 @@ public class PlanetTest{
 
     @Test
     public void testIsInsideBoundary(){
-        Planet p = new Planet(3.0, 10.0, new Vector(0.0,0.0), new Vector(0.0,0.0), null);
+        Planet p = new Planet(3.0, 10.0, new Vector(0.0,0.0), new Vector(0.0,0.0), null, null);
         assertTrue(p.isInsideBoundary(-4, 4, -4, 4));
         assertTrue(p.isInsideBoundary(-3, 3, -3, 3) == false);
 
-        p = new Planet(2.99999999, 10.0, new Vector(0.0,0.0), new Vector(0.0,0.0), null);
+        p = new Planet(2.99999999, 10.0, new Vector(0.0,0.0), new Vector(0.0,0.0), null, null);
         assertTrue(p.isInsideBoundary(-4, 4, -4, 4));
         assertTrue(p.isInsideBoundary(-3, 3, -3, 3));
         assertTrue(p.isInsideBoundary(-3, 3, -1, 3) == false);
@@ -87,11 +87,11 @@ public class PlanetTest{
 
     @Test
     public void testCalculateWallCollision(){
-        Planet p = new Planet(3.0, 10.0, new Vector(0.0,0.0), new Vector(0.0,0.0), null);
+        Planet p = new Planet(3.0, 10.0, new Vector(0.0,0.0), new Vector(0.0,0.0), null, null);
         assertTrue(p.isInsideBoundary(-4, 4, -4, 4));
         assertTrue(p.isInsideBoundary(-3, 3, -3, 3) == false);
 
-        p = new Planet(2.99999999, 10.0, new Vector(0.0,0.0), new Vector(0.0,0.0), null);
+        p = new Planet(2.99999999, 10.0, new Vector(0.0,0.0), new Vector(0.0,0.0), null, null);
         assertTrue(p.isInsideBoundary(-4, 4, -4, 4));
         assertTrue(p.isInsideBoundary(-3, 3, -3, 3));
         assertTrue(p.isInsideBoundary(-3, 3, -1, 3) == false);

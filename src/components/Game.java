@@ -20,6 +20,7 @@ import javax.swing.event.ChangeListener;
 
 import static javax.swing.JOptionPane.showMessageDialog;
 
+
 public class Game extends JFrame{
     Controller controller;
     static private Integer CURR_FPS;
@@ -29,11 +30,11 @@ public class Game extends JFrame{
     static private Integer MAPSIZE_X_MAX, MAPSIZE_Y_MAX;
     static private boolean isExit, isPaused = true;
     static String BACKGROUND_FILEPATH, SAVES_FILEPATH;
-    private Object[] defaultPlanets, backgroundOptions;
+    private Object[] defaultPlanets, backgroundOptions, specialities;
     JPanel topPanel, bottomPanel, mainPanel;
     HashMap<String, PlanetPlacer> defaultPlanetPlacer;
     HashMap<String, BackgroundChanger> backgroundChanger;
-    JComboBox<Object> cboxPlanets, cboxBackground;
+    JComboBox<Object> cboxPlanets, cboxBackground, cboxSpec;
     JTextField radiusField;
     JTextField massField;
     BufferedImage backgroundBuffImage;
@@ -49,7 +50,7 @@ public class Game extends JFrame{
         MASS_MAX = 10e18;
         MAPSIZE_X_MAX = 1400;
         MAPSIZE_Y_MAX = 700;
-        BACKGROUND_FILEPATH = "src/components/Background_High_Quality.jpg";
+        BACKGROUND_FILEPATH = "src/components/Background_High_Quality.jpg";                                                                 
         SAVES_FILEPATH = "src/savefiles.dat";
     }
 
@@ -57,6 +58,7 @@ public class Game extends JFrame{
         controller = new Controller(MAPSIZE_X_MAX, MAPSIZE_Y_MAX);
         defaultPlanets = new String[]{"Earth", "Mars", "Moon", "Sun", "Neptun", "Black Hole","Custom"};
         backgroundOptions = new String[]{"Universe", "White", "Black"};
+        specialities = new String[]{"Orbit", "Static"};
         if(BACKGROUND_FILEPATH != null && BACKGROUND_FILEPATH != ""){
             try {
                 FileInputStream is = new FileInputStream(BACKGROUND_FILEPATH);
@@ -83,19 +85,22 @@ public class Game extends JFrame{
         defaultPlanetPlacer.put("Earth", new PlanetPlacer() {
             @Override
             public void placePlanet(Integer x, Integer y) {
-                controller.placePlanet(14.371, 4.57e4, new Vector(x, y), new Color(40, 122, 184));
+                String currSpec = (String)cboxSpec.getSelectedItem();
+                controller.placePlanet(14.371, 4.57e4, new Vector(x, y), new Color(40, 122, 184), currSpec);
             }
         });
         defaultPlanetPlacer.put("Mars", new PlanetPlacer() {
             @Override
             public void placePlanet(Integer x, Integer y) {
-                controller.placePlanet(10.389, 3.39e3, new Vector(x, y), new Color(0xc1440e));
+                String currSpec = (String)cboxSpec.getSelectedItem();
+                controller.placePlanet(10.389, 3.39e3, new Vector(x, y), new Color(0xc1440e), currSpec);
             }
         });
         defaultPlanetPlacer.put("Moon", new PlanetPlacer() {
             @Override
             public void placePlanet(Integer x, Integer y) {
-                controller.placePlanet(5.37, 7.34e2, new Vector(x, y), new Color(102, 102, 102 ));
+                String currSpec = (String)cboxSpec.getSelectedItem();
+                controller.placePlanet(5.37, 7.34e2, new Vector(x, y), new Color(102, 102, 102 ), currSpec);
             }
         });
         defaultPlanetPlacer.put("Neptun", new PlanetPlacer() {
@@ -108,13 +113,15 @@ public class Game extends JFrame{
         defaultPlanetPlacer.put("Sun", new PlanetPlacer() {
             @Override
             public void placePlanet(Integer x, Integer y) {
-                controller.placePlanet(30.024, 5.97e18, new Vector(x, y), new Color( 253, 184, 19 ));
+                String currSpec = (String)cboxSpec.getSelectedItem();
+                controller.placePlanet(30.024, 5.97e18, new Vector(x, y), new Color( 253, 184, 19 ), currSpec);
             }
         });
         defaultPlanetPlacer.put("Black Hole", new PlanetPlacer() {
             @Override
             public void placePlanet(Integer x, Integer y) {
-                controller.placePlanet(3.024, 8.97e20, new Vector(x, y), new Color( 0, 0, 0));
+                String currSpec = (String)cboxSpec.getSelectedItem();
+                controller.placePlanet(3.024, 8.97e20, new Vector(x, y), new Color( 0, 0, 0), currSpec);
             }
         });
         defaultPlanetPlacer.put("Custom", new PlanetPlacer() {
@@ -141,7 +148,8 @@ public class Game extends JFrame{
                 Vector mousePosition = new Vector(x, y);
                 Random r = new Random();
                 Color color = new Color(r.nextInt(256), r.nextInt(256), r.nextInt(256));
-                controller.placePlanet(radiusFieldValue, massFieldValue, mousePosition, color);
+                String currSpec = (String)cboxSpec.getSelectedItem();
+                controller.placePlanet(radiusFieldValue, massFieldValue, mousePosition, color, currSpec);
             }
         });
     }
@@ -291,6 +299,17 @@ public class Game extends JFrame{
         // bottomPanel
         bottomPanel = new JPanel(new FlowLayout());
         bottomPanel.setBackground(new Color(0x003b59));
+
+        // ComboBox for Planet Speciality
+        cboxSpec = new JComboBox<>(specialities);
+        cboxSpec.setEditable(false);
+        cboxSpec.setSelectedIndex(0);
+        cboxSpec.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            }
+        });
+        bottomPanel.add(cboxSpec);
 
         radiusField = new JTextField("", 20);
         massField = new JTextField("", 6);
@@ -471,7 +490,7 @@ public class Game extends JFrame{
     */
     private void setUpMainPanel(){
         // mainPanel
-        PerformanceCounter c = new PerformanceCounter("paintComponent()");
+        PerformanceCounter c = new PerformanceCounter("mainPanel.paintComponent()");
         mainPanel = new JPanel(){
             @Override
             public void paintComponent(Graphics g) {
