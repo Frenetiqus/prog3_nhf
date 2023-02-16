@@ -1,0 +1,40 @@
+-----runSimulation():while(!isExit)-----
+count: 1799723.0
+min: 4.19E-4 ms
+max: 22.933433 ms
+avg: 0.03511933162936728 ms
+-----getCirclePointAt()-----
+count: 1426368.0
+min: 4.19E-4 ms
+max: 1.093365 ms
+avg: 0.0011617260875173196 ms
+-----calculateNewPlanetPositions()-----
+count: 5244.0
+min: 10.943781 ms
+max: 22.797523 ms
+avg: 11.590795864797848 ms
+-----calculateWallCollision()-----
+count: 356592.0
+min: 0.00852 ms
+max: 1.108451 ms
+avg: 0.010409828812760796 ms
+-----mainPanel.paintComponent()-----
+count: 5247.0
+min: 0.302483 ms
+max: 11.151768 ms
+avg: 0.6449148378120829 ms
+-----calculateForceTo()-----
+count: 2.3891664E7
+min: 4.19E-4 ms
+max: 4.685931 ms
+avg: 0.001169898121662713 ms
+-----handlePlanetAnomalies()-----
+count: 356592.0
+min: 0.010477 ms
+max: 1.110826 ms
+avg: 0.012693269464822462 ms
+-----drawPlanet()-----
+count: 356660.0
+min: 0.001815 ms
+max: 4.41823 ms
+avg: 0.0077298858100149906 ms

@@ -355,6 +355,7 @@ public class Game extends JFrame{
                     showMessageDialog(null, "Could not load Universe background! Background was set to White.");
                     cboxBackground.setSelectedItem("White");
                 }
+                //mainPanel
                 mainPanel.repaint();
             }
         });
@@ -406,6 +407,7 @@ public class Game extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 try{
                     controller.loadSimulationFile(SAVES_FILEPATH);
+                    mainPanel.repaint();
                 }catch(IOException err){
                     err.printStackTrace();
                 }
@@ -497,10 +499,11 @@ public class Game extends JFrame{
                 c.countStart();
                 Graphics2D g2d = (Graphics2D) g;
         
-                g2d.clearRect(0, 0, MAPSIZE_X_MAX, MAPSIZE_Y_MAX); 
+                //g2d.clearRect(0, 0, MAPSIZE_X_MAX, MAPSIZE_Y_MAX); 
 
                 String currBackground = (String)cboxBackground.getSelectedItem();
                 backgroundChanger.get(currBackground).paintBackground(g2d, this);
+                
 
                 controller.drawPlanets(g2d);
                 c.countStop();

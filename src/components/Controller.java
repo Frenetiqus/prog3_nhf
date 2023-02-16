@@ -21,7 +21,6 @@ public class Controller{
     private Integer MAPSIZE_X_MAX, MAPSIZE_Y_MAX;
     static private Double timeFrame;
     private List<Planet> planets;
-    private PlanetSpec currPlanetSpec;
     
 
     static{
@@ -31,7 +30,6 @@ public class Controller{
     public Controller(Integer mapsizeXMax, Integer mapsizeYMax){
         this.MAPSIZE_X_MAX = mapsizeXMax;
         this.MAPSIZE_Y_MAX = mapsizeYMax;
-        currPlanetSpec = PlanetSpec.Orbit;
         planets = Collections.synchronizedList(new ArrayList<>());
     }
 
@@ -74,10 +72,10 @@ public class Controller{
                 pSpec = PlanetSpec.Static;
                 break;
         }
-        placePlanet(radius, mass, position, color, pSpec);      
+        placePlanet1(radius, mass, position, color, pSpec);      
     }
 
-    public void placePlanet(Double radius, Double mass, Vector position, Color color, PlanetSpec spec) {
+    public void placePlanet1(Double radius, Double mass, Vector position, Color color, PlanetSpec spec) {
         PerformanceCounter c = new PerformanceCounter("placePlanet()(PlanetSpec)");
         c.countStart();
         Planet newPlanet = new Planet(radius, mass, position, new Vector(), color, spec);
@@ -134,8 +132,6 @@ public class Controller{
                 }
                 Planet previousState = new Planet(currPlanet);
                 Vector acceleration = resultantForce.multiply(1/currPlanet.getMass());
-                // Vector oldVelocity = new Vector(currPlanet.getVelocity());
-                // Vector oldPosition = new Vector(currPlanet.getPosition());
                 Vector newVelocity = currPlanet.getVelocity().add(acceleration.multiply(timeFrame));
                 Vector newPosition = currPlanet.getPosition().add(newVelocity.multiply(timeFrame));
                 currPlanet.setVelocity(newVelocity);
@@ -221,6 +217,10 @@ public class Controller{
         }
         c.countStop();
     }
+
+    // private void handlePlanetCollision(Planet planet){
+        
+    // }
 
 
     public void drawPlanets(Graphics2D g2d){
